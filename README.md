@@ -1,5 +1,4 @@
-## Usage
-### DeepCoFFeA
+## How to run DeepCoFFEA 
 
 0. Download DeepCorr data from [here](https://drive.google.com/drive/folders/1Z4PyMCX99xME3T_LLvURejSfisP9jy4n?usp=sharing). 
    Download our new data from [here](https://drive.google.com/file/d/1ZYFXfESD15SAR4Q8hsoVYdTHpTD8Orys/view?usp=sharing)
