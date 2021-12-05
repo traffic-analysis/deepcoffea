@@ -32,8 +32,8 @@ def get_params():
     parser.add_argument ('--num_window', required=False, default=11)
     parser.add_argument ('--alpha', required=False, default=0.1)
     parser.add_argument ('--input', required=False, default='/data/website-fingerprinting/datasets/new_dcf_data/crawle_new_overlap_interval')
-    parser.add_argument ('--test', required=False, default='/data/seoh/DeepCCA_model/crawle_overlap_new2021_interal_testtest')
-    parser.add_argument ('--model', required=False, default="/data/seoh/DeepCCA_model/crawle_overlap_new2021_testtest")
+    parser.add_argument ('--test', required=False, default='/data/seoh/DeepCCA_model/crawle_overlap_new2021_interal')
+    parser.add_argument ('--model', required=False, default="/data/seoh/DeepCCA_model/crawle_overlap_new2021_")
     args = parser.parse_args ()
     return args
 
