@@ -1,3 +1,14 @@
+# DeepCoFFEA Attack
+:warning: experimental - PLEASE BE CAREFUL. Intended for reasearch purposes only.
+
+This repository contains code and dataset of the *DeepCoFFEA: Improved Flow Correlation Attacks on Tor via Metric Learning and Amplification* paper accepted in *IEEE Symposium on Security and Privacy (Oakland) 2022*. The code and dataset can be used to reproduce the results presented in the paper. :
+
+## Reference Format
+```
+coming soon
+```
+
+
 ## How to run DeepCoFFEA 
 
 0. - Download our new data from [here](https://drive.google.com/file/d/1ZYFXfESD15SAR4Q8hsoVYdTHpTD8Orys/view?usp=sharing).
