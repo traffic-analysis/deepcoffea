@@ -73,3 +73,8 @@ python eval_dcf.py (--input <your_input_path> --model1 <your_model1_path> --mode
 ```
 
 The script above will generate TPRs, FPRs, and BDRs when using 9 out 11 window results. 
+
+
+
+### Acknowledgements
+We thank our anonymous reviewers for helpful suggestions and comments regarding the presentation and evaluation of DeepCoFFEA. We also thank Milad Nasr for sharing the code of Compressive Traffic Analysis and the DeepCorr set, and discussion about the data collection. We extend our appreciation to Erik Lindeman for the help with building the data collection method. This work was funded by the National Science Foundation under Grants nos. 1816851, 1433736, and 1815757.
