@@ -4,7 +4,7 @@
 This repository contains code and dataset of the **DeepCoFFEA: Improved Flow Correlation Attacks on Tor via Metric Learning and Amplification** paper accepted in ***IEEE Symposium on Security and Privacy (Oakland) 2022***. The code and dataset can be used to reproduce the results presented in the paper.
 
 
-![DeepCoFFEA Attack](./repo_imag/scenario3.png)
+![DeepCoFFEA Attack](./repo_img/scenario3.png)
 ######  Figure: Example DeepCoFFEA Scenario: In this example, we had ten ($t_{i}, x_{i})$ flow pairs and five windows (W1,...,W5). First, we performed the non-overlapping window partition to generate two training sets, $T_{tr}$ and $X_{tr}$, and ten testing sets, $T_{te1}$,..,$T_{te5}$,$X_{te1}$,..$X_{te5}$. Then, we trained the \attack feature embedding network (FEN) with $T_{tr}$ and $X_{tr}$ and generated the feature embedding vectors using A and P/N models for each testing set, ($T_{te_{w}}$,$X_{te_{w}}$) where $w$=1,...,5. We then computed the pairwise cosine similarity scores for each testing window and voted with 1 if the score was greater than $\tau$ or 0 otherwise. Finally, we aggregated those results and determined that the flow pair was correlated if it had at least four 1 votes.
 
 ## Reference Format
