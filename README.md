@@ -8,7 +8,13 @@ Figure: Example DeepCoFFEA Scenario: In this example, we had ten (<img src="http
 
 ## Reference Format
 ```
-coming soon
+@inproceedings{DeepCoFFEA,
+  title={{DeepCoFFEA: Improved Flow Correlation Attacks on Tor via Metric Learning and Amplification}},
+  author={Oh, Se Eun and Yang, Taiji and Mathews, Nate and Holland, James K and Rahman, Mohammad Saidur and Hopper, Nicholas and Wright, Matthew},
+  booktitle={IEEE Symposium on Security and Privacy (S\&P)},
+  year={2022},
+  organization={IEEE}
+}
 ```
 
 
