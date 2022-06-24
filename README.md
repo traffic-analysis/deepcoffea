@@ -16,7 +16,51 @@ Figure: Example DeepCoFFEA Scenario: In this example, we had ten (<img src="http
   organization={IEEE}
 }
 ```
+## Prerequisite
 
+Python Version: Python 3.6.8
+
+List of Python packages installed in our venv:
+
+```
+#Here is the result when running pip freeze over our venv
+
+absl-py==0.8.1
+astor==0.8.0
+cycler==0.10.0
+gast==0.3.2
+google-pasta==0.1.7
+grpcio==1.24.3
+h5py==2.10.0
+joblib==0.14.0
+Keras==2.3.0
+Keras-Applications==1.0.8
+Keras-Preprocessing==1.1.0
+kiwisolver==1.1.0
+Markdown==3.1.1
+matplotlib==3.1.1
+mock==3.0.5
+numpy==1.17.3
+Pillow==6.2.1
+protobuf==3.10.0
+pyparsing==2.4.4
+python-dateutil==2.8.1
+PyYAML==5.1.2
+scikit-learn==0.21.3
+scipy==1.3.1
+six==1.12.0
+sklearn==0.0
+tensorboard==1.13.1
+tensorflow-addons==0.4.0
+tensorflow-estimator==1.13.0
+tensorflow-gpu==1.13.1
+termcolor==1.1.0
+tflearn==0.3.2
+tfwn==1.0.1
+tqdm==4.37.0
+Werkzeug==0.16.0
+wrapt==1.11.2
+```
 
 ## How to run DeepCoFFEA ?
 
