@@ -18,6 +18,8 @@ Figure: Example DeepCoFFEA Scenario: In this example, we had ten (<img src="http
 ```
 ## Prerequisite
 
+GPU Support: We used Cuda10, Cudnn7.6.4
+
 Python Version: Python 3.6.8
 
 List of Python packages installed in our venv:
