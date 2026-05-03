@@ -5,10 +5,10 @@ try:
 except ImportError:
     import _pickle as thepickle
 
-
+import gc
 from keras.callbacks import LambdaCallback
 from new_model import create_model, create_model_2d
-import keras.backend.tensorflow_backend as ktf
+# import keras.backend.tensorflow_backend as ktf
 import tensorflow as tf
 import os
 from keras.models import Model
@@ -22,7 +22,7 @@ import pickle
 import keras.backend as K
 #### Stop the model training when 0.002 to get the best result in the paper!!!!
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1";
+os.environ["CUDA_VISIBLE_DEVICES"] = "0";
 parser = argparse.ArgumentParser()
 
 def get_params():
@@ -31,16 +31,16 @@ def get_params():
     parser.add_argument ('--win_interval', required=False, default=5)
     parser.add_argument ('--num_window', required=False, default=11)
     parser.add_argument ('--alpha', required=False, default=0.1)
-    parser.add_argument ('--input', required=False, default='/data/website-fingerprinting/datasets/new_dcf_data/crawle_new_overlap_interval')
-    parser.add_argument ('--test', required=False, default='/data/seoh/DeepCCA_model/crawle_overlap_new2021_interal')
-    parser.add_argument ('--model', required=False, default="/data/seoh/DeepCCA_model/crawle_overlap_new2021_")
+    parser.add_argument ('--input', required=False, default='./data/datasets/train_data/crawle_new_overlap_interval')
+    parser.add_argument ('--test', required=False, default='./data/datasets/test_data/crawle_overlap_new2021_interval')
+    parser.add_argument ('--model', required=False, default="./data/model/crawle_overlap_new2021_")
     args = parser.parse_args ()
     return args
 
 def get_session(gpu_fraction=0.85):
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction,
+    gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction,
                                 allow_growth=True)
-    return tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+    return tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
 
 def load_whole_seq_new(tor_seq,exit_seq,circuit_labels,test_c,train_c,model_gb):
     train_window1=[]
@@ -60,13 +60,12 @@ def load_whole_seq_new(tor_seq,exit_seq,circuit_labels,test_c,train_c,model_gb):
         window_exit_size.append([float(pair["size"]) / 1000.0 for pair in exit_seq[i]])
         window_tor_ipd.append ([float(pair["ipd"])* 1000.0 for pair in tor_seq[i]])
         window_exit_ipd.append ([float(pair["ipd"])* 1000.0 for pair in exit_seq[i]])
-
-    print('window_tor_size', np.array(window_tor_size).shape)
-    print('window_exit_size', np.array(window_exit_size).shape)
-    print('window_tor_ipd', np.array(window_tor_ipd).shape)
-    print('window_exit_ipd', np.array(window_exit_ipd).shape)
-    window_tor_ipd = np.array(window_tor_ipd)
-    window_exit_ipd = np.array(window_exit_ipd)
+    print('window_tor_size', np.array(window_tor_size, dtype=object).shape)
+    print('window_exit_size', np.array(window_exit_size, dtype=object).shape)
+    print('window_tor_ipd', np.array(window_tor_ipd, dtype=object).shape)
+    print('window_exit_ipd', np.array(window_exit_ipd, dtype=object).shape)
+    window_tor_ipd = np.array(window_tor_ipd, dtype=object)
+    window_exit_ipd = np.array(window_exit_ipd, dtype=object)
 
     # Change the first idp to 0 across all windows.
     new_window_tor_ipd = []
@@ -87,8 +86,8 @@ def load_whole_seq_new(tor_seq,exit_seq,circuit_labels,test_c,train_c,model_gb):
         window_tor.append(np.concatenate((window_tor_ipd[i], window_tor_size[i]), axis=None))
         window_exit.append(np.concatenate((window_exit_ipd[i], window_exit_size[i]), axis=None))
 
-    window_tor = np.array(window_tor)
-    window_exit = np.array(window_exit)
+    window_tor = np.array(window_tor, dtype=object)
+    window_exit = np.array(window_exit, dtype=object)
     print('window_tor', window_tor.shape)
     print('window_exit', window_exit.shape)
 
@@ -104,15 +103,15 @@ def load_whole_seq_new(tor_seq,exit_seq,circuit_labels,test_c,train_c,model_gb):
         elif c in test_c:
             test_window2.append(w)
 
-    print ('train_window1', np.array(train_window1).shape)
-    print ('train_window2', np.array(train_window1).shape)
+    print ('train_window1', np.array(train_window1, dtype=object).shape)
+    print ('train_window2', np.array(train_window1, dtype=object).shape)
 
-    return np.array(train_window1), np.array(train_window2), np.array(test_window1), np.array(test_window2), np.array(test_window1), np.array(test_window2)
+    return np.array(train_window1, dtype=object), np.array(train_window2, dtype=object), np.array(test_window1, dtype=object), np.array(test_window2, dtype=object), np.array(test_window1, dtype=object), np.array(test_window2, dtype=object)
 
 
 if __name__ == '__main__':
     args = get_params()
-    ktf.set_session(get_session())
+    tf.compat.v1.keras.backend.set_session(get_session())
 
     model_gb = 'cnn1d'
 
@@ -138,7 +137,8 @@ if __name__ == '__main__':
     test_labels = []
     valid_labels = []
 
-    for window_index in window_index_list:
+    for i, window_index in enumerate(window_index_list):
+        print(f"Processing {i} of {len(window_index_list)}...")
         addn = 2
         pickle_path = args.input+str(interval)+'_win'+ str(window_index) +'_addn'+ str(addn) +'_w_superpkt.pickle'
 
@@ -294,9 +294,19 @@ if __name__ == '__main__':
         tor_embs = conv1.predict(tor_t)
         exit_embs = conv2.predict(exit_t)
         all_embs = np.concatenate((tor_embs, exit_embs), axis=0)
+
+        del tor_t
+        del exit_t
+        del tor_embs
+        del exit_embs
+
         all_embs = all_embs / np.linalg.norm(all_embs, axis=-1, keepdims=True)
         mid = int(len(all_embs) / 2)
         all_sims = np.dot(all_embs[:mid], all_embs[mid:].T)
+        
+        del all_embs
+        gc.collect()
+
         return all_sims
 
 
@@ -331,32 +341,34 @@ if __name__ == '__main__':
                     break
             if not appended:
                 final_neg.append(np.random.choice(valid_neg_pool, 1)[0])
+            
+        del similarities
+        gc.collect()
+
         return final_neg
 
 
     class SemiHardTripletGenerator():
-        def __init__(self, Xa_train, Xp_train, batch_size, neg_traces_train_idx, Xa_train_all, Xp_train_all, conv1,
-                     conv2):
+        def __init__(self, Xa_train, Xp_train, batch_size, neg_traces_train_idx, Xa_train_all, Xp_train_all, conv1, conv2):
             self.batch_size = batch_size  # 128
 
             self.Xa = Xa_train
             self.Xp = Xp_train
             self.Xa_all = Xa_train_all
             self.Xp_all = Xp_train_all
-            self.Xp = Xp_train
             self.cur_train_index = 0
             self.num_samples = Xa_train.shape[0]
             self.neg_traces_idx = neg_traces_train_idx
 
             if conv1:
-                self.similarities = build_similarities(conv1, conv2, self.Xa_all,
-                                                       self.Xp_all)  # compute all similarities including cross pairs
+                self.similarities = build_similarities(conv1, conv2, self.Xa_all, self.Xp_all)  # compute all similarities including cross pairs
+                
             else:
                 self.similarities = None
 
         def next_train(self):
             while 1:
-                self.cur_train_index += self.batch_size
+                print(f"\nself.curr_train_index: {self.cur_train_index}")
                 if self.cur_train_index >= self.num_samples:
                     self.cur_train_index = 0  # initialize the index for the next epoch
 
@@ -365,8 +377,13 @@ if __name__ == '__main__':
                                           self.cur_train_index + self.batch_size))
                 traces_p = np.array(range(self.cur_train_index,
                                           self.cur_train_index + self.batch_size))
-
+                
+                self.cur_train_index += self.batch_size
+                
                 traces_n = build_negatives(traces_a, traces_p, self.similarities, self.neg_traces_idx)
+
+                gc.collect()
+
                 yield ([self.Xa[traces_a],
                         self.Xp[traces_p],
                         self.Xp_all[traces_n]],
@@ -390,7 +407,7 @@ if __name__ == '__main__':
         loss = logs['loss']
 
         if loss < best_loss:
-            print("loss is improved from {} to {}. save the model".format(str(best_loss),
+            print("\nloss is improved from {} to {}. save the model".format(str(best_loss),
                                                                           str(loss)))
 
             best_loss = loss
@@ -399,7 +416,7 @@ if __name__ == '__main__':
             shared_model2.save_weights(
                 args.model + str(num_windows) + "_interval"+str(interval)+'_addn'+str(addn)+"_model2_w_superpkt.h5")
         else:
-            print("loss is not improved from {}.".format(str(best_loss)))
+            print("\nloss is not improved from {}.".format(str(best_loss)))
 
 
     for epoch in range(nb_epochs):
@@ -410,24 +427,40 @@ if __name__ == '__main__':
                 model_triplet.fit_generator(generator=gen_hard.next_train(),
                                             steps_per_epoch=train_windows1.shape[0] // batch_size - 1,
                                             epochs=1, verbose=1)
+                del gen_hard.Xa
+                del gen_hard.Xp
+                del gen_hard.Xa_all
+                del gen_hard.Xp_all
+            
             else:
-                model_triplet.fit_generator(generator=gen_hard_even.next_train(),
+                model_triplet.fit_generator(generator=gen_hard.next_train(),
                                             steps_per_epoch=(train_windows1.shape[0] // 2) // batch_size - 1,
                                             epochs=1, verbose=1, callbacks=[LambdaCallback(on_epoch_end=saveModel)])
+                del gen_hard.similarities
+                del gen_hard.Xa
+                del gen_hard.Xp
+                del gen_hard.Xa_all
+                del gen_hard.Xp_all
         else:
-            model_triplet.fit_generator(generator=gen_hard_odd.next_train(),
+            model_triplet.fit_generator(generator=gen_hard.next_train(),
                                         steps_per_epoch=(train_windows1.shape[0] // 2) // batch_size - 1,
                                         epochs=1, verbose=1, callbacks=[LambdaCallback(on_epoch_end=saveModel)])
-
+            del gen_hard.similarities
+            del gen_hard.Xa
+            del gen_hard.Xp
+            del gen_hard.Xa_all
+            del gen_hard.Xp_all
+        gc.collect()
         mid = int(len(train_windows1) / 2)
         random_ind = np.array(range(len(train_windows1)))
         np.random.shuffle(random_ind)
         X1 = np.array(random_ind[:mid])
         X2 = np.array(random_ind[mid:])
-
-        gen_hard_odd = SemiHardTripletGenerator(train_windows1[X1], train_windows2[X1], batch_size, X2, train_windows1,
-                                                train_windows2,
-                                                shared_model1, shared_model2)
-        gen_hard_even = SemiHardTripletGenerator(train_windows1[X2], train_windows2[X2], batch_size,
-                                                 X1, train_windows1, train_windows2,
-                                                 shared_model1, shared_model2)
+        if (epoch + 1) % 2 == 1:
+            gen_hard = SemiHardTripletGenerator(train_windows1[X1], train_windows2[X1], batch_size, X2, train_windows1,
+                                                    train_windows2,
+                                                    shared_model1, shared_model2) # prev gen_hard_odd
+        else:
+            gen_hard = SemiHardTripletGenerator(train_windows1[X2], train_windows2[X2], batch_size,
+                                                     X1, train_windows1, train_windows2,
+                                                     shared_model1, shared_model2) # prev gen_hard_even
